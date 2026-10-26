@@ -1,0 +1,16 @@
+.env
+.chroma/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.files/
+.chainlit/translations/
+eval/results.md
+SPEC.md
+slide.md
+readme_origin.md
+AGENT_GUIDE.md
+*.ipynb
+.vscode/
+slides.md

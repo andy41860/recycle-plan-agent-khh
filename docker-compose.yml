@@ -1,0 +1,51 @@
+services:
+  mcp-recycle:
+    build:
+      context: .
+      dockerfile: mcp_recycle/Dockerfile
+    env_file: .env
+    environment:
+      MCP_HOST: 0.0.0.0
+    ports:
+      - "8001:8001"
+    volumes:
+      # 唯讀掛入，修改時刻表後不需重建映像檔（server 每次呼叫都會重新讀檔）
+      - ./mcp_recycle/schedule.json:/app/mcp_recycle/schedule.json:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 8001), 3).close()"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  agent:
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    image: recycle-agent:latest
+    env_file: .env
+    environment:
+      MCP_RECYCLE_URL: http://mcp-recycle:8001/mcp
+      CHROMA_PATH: /app/.chroma
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/app/.chroma
+    depends_on:
+      mcp-recycle:
+        condition: service_healthy
+
+  ingest:
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    image: recycle-agent:latest
+    command: ["python", "scripts/ingest.py"]
+    env_file: .env
+    environment:
+      CHROMA_PATH: /app/.chroma
+    volumes:
+      - chroma_data:/app/.chroma
+    profiles: ["tools"]
+
+volumes:
+  chroma_data:

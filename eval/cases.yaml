@@ -1,0 +1,181 @@
+# type: single / alias / composite / conditional / multi / schedule / not_found / food_waste / out_of_scope
+# now 未指定時用 2026-10-23T18:00:00+08:00（週五）
+
+- id: single-pet-bottle
+  type: single
+  question: 寶特瓶怎麼丟？
+  expect:
+    items: {寶特瓶: 資源回收}
+
+- id: single-newspaper
+  type: single
+  question: 舊報紙要丟哪？
+  expect:
+    items: {報紙: 資源回收}
+
+- id: single-aluminum-foil-pack
+  type: single
+  question: 喝完的鋁箔包怎麼處理？
+  expect:
+    items: {鋁箔包: 資源回收}
+
+- id: single-mirror
+  type: single
+  question: 破掉的鏡子怎麼丟？
+  expect:
+    items: {鏡子: 一般垃圾}
+
+- id: single-tissue
+  type: single
+  question: 用過的衛生紙可以回收嗎？
+  expect:
+    items: {衛生紙: 一般垃圾}
+
+- id: single-fluorescent-tube
+  type: single
+  question: 壞掉的日光燈管怎麼丟？
+  expect:
+    items: {日光燈管: 資源回收}
+
+- id: alias-plastic-lunchbox
+  type: alias
+  question: 外送的塑膠便當盒怎麼丟？
+  expect:
+    items: {塑膠便當盒: 資源回收}
+
+- id: alias-power-bank
+  type: alias
+  question: 沒電的充電寶怎麼丟？
+  expect:
+    items: {充電寶: 特殊管道}
+
+- id: alias-air-conditioner
+  type: alias
+  question: 舊冷氣要怎麼處理？
+  expect:
+    items: {冷氣: 資源回收}
+
+- id: alias-scooter-battery
+  type: alias
+  question: 機車電瓶壞了怎麼丟？
+  expect:
+    items: {機車電瓶: 資源回收}
+
+- id: alias-laptop
+  type: alias
+  question: 舊筆電怎麼回收？
+  expect:
+    items: {筆電: 資源回收}
+
+- id: composite-bubble-tea-cup
+  type: composite
+  question: 手搖杯要怎麼丟？
+  expect:
+    items:
+      手搖杯-杯身: 資源回收
+      手搖杯-吸管: 一般垃圾
+
+- id: composite-helmet
+  type: composite
+  question: 舊安全帽怎麼丟？
+  expect:
+    items:
+      安全帽-可拆解部分（帽殼、面罩、鎖扣）: 資源回收
+      安全帽-其餘部分: 一般垃圾
+
+- id: conditional-greasy-styrofoam
+  type: conditional
+  question: 沾滿油的保麗龍便當盒能回收嗎？
+  expect:
+    items: {保麗龍便當盒: 一般垃圾}
+
+- id: conditional-clean-styrofoam
+  type: conditional
+  question: 洗乾淨的保麗龍碗能回收嗎？
+  expect:
+    items: {保麗龍碗: 資源回收}
+
+- id: conditional-sofa
+  type: conditional
+  question: 舊沙發要怎麼丟？
+  expect:
+    items: {沙發: 特殊管道}
+
+- id: conditional-renovation-wood
+  type: conditional
+  question: 裝潢剩下的木板怎麼丟？
+  expect:
+    items: {木板: 特殊管道}
+
+- id: multi-tonight
+  type: multi
+  question: 手搖杯、廢電池、紙便當盒今晚能丟嗎？
+  now: 2026-10-23T18:00:00+08:00
+  expect:
+    items:
+      手搖杯-杯身: 資源回收
+      手搖杯-吸管: 一般垃圾
+      廢電池: 特殊管道
+      紙便當盒: 資源回收
+    pickups:
+      資源回收: {date: 2026-10-23, start: "18:30"}
+      一般垃圾: {date: 2026-10-23, start: "18:30"}
+
+- id: schedule-wed-recycle
+  type: schedule
+  question: 今天有收資源回收嗎？幾點？
+  now: 2026-10-21T10:00:00+08:00
+  expect:
+    pickups:
+      資源回收: {date: 2026-10-23, start: "18:30"}
+
+- id: schedule-past-window
+  type: schedule
+  question: 一般垃圾現在還能丟嗎？
+  now: 2026-10-26T21:00:00+08:00
+  expect:
+    pickups:
+      一般垃圾: {date: 2026-10-27, start: "18:30"}
+
+- id: schedule-exception-skip
+  type: schedule
+  question: 明天有收垃圾嗎？
+  now: 2026-10-29T21:00:00+08:00
+  expect:
+    pickups:
+      一般垃圾: {date: 2026-10-31, start: "18:30"}
+
+- id: schedule-sat-recycle
+  type: schedule
+  question: 我現在可以丟資源回收嗎？
+  now: 2026-10-24T21:00:00+08:00
+  expect:
+    pickups:
+      資源回收: {date: 2026-10-27, start: "18:30"}
+
+- id: schedule-mon-recycle
+  type: schedule
+  question: 今天有收資源回收嗎？
+  now: 2026-10-26T10:00:00+08:00
+  expect:
+    pickups:
+      資源回收: {date: 2026-10-27, start: "18:30"}
+
+- id: not-found-contact-lens
+  type: not_found
+  question: 用過的隱形眼鏡怎麼丟？
+  expect:
+    items: {隱形眼鏡: 查無資料}
+
+- id: food-waste-leftovers
+  type: food_waste
+  question: 吃剩的便當菜要丟哪？
+  expect:
+    items: {剩菜: 查無資料}
+    food_waste_link: true
+
+- id: out-of-scope-poem
+  type: out_of_scope
+  question: 幫我寫一首關於秋天的詩
+  expect:
+    out_of_scope: true

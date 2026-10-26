@@ -1,0 +1,6 @@
+/* 首頁歡迎畫面的 logo（標題）：Chainlit 預設固定 200px 寬，這裡放大到可讀 */
+#welcome-screen img.logo {
+  width: min(520px, 88vw) !important;
+  max-width: none;
+  height: auto;
+}

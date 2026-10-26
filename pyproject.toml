@@ -1,0 +1,23 @@
+[project]
+name = "recycle-agent-workspace"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["recycle-agent", "mcp-recycle", "pyyaml"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["agent", "mcp_recycle"]
+
+[tool.uv.sources]
+recycle-agent = { workspace = true }
+mcp-recycle = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest", "pytest-asyncio"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["openai: 需要 OPENAI_API_KEY 的測試，預設略過"]
+addopts = "-m 'not openai'"
