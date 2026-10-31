@@ -10,22 +10,45 @@
 
 ## 1. 架構
 
+```mermaid
+flowchart TB
+    User([使用者]) --> UI["Chainlit UI"]
+    UI --> Reason
+
+    subgraph Agent["LangGraph StateGraph（自行實作的 ReAct 迴圈）"]
+        direction TB
+        Reason["<b>reason</b><br/>呼叫 LLM（Thought）"]
+        Act["<b>act</b><br/>執行工具（含重複呼叫偵測）"]
+        Limit["<b>limit</b><br/>步數上限保護"]
+        Reason -- "有 tool_calls" --> Act
+        Act -- "Observation" --> Reason
+        Reason -- "超過 MAX_STEPS" --> Limit
+    end
+
+    Reason -- "無 tool_calls" --> Answer([最終答案])
+    Limit --> Answer
+
+    Act --> RAG["search_rules"]
+    Act --> Skill["load_skill<br/>run_skill_script"]
+    Act --> MCPC["MCP client<br/>langchain-mcp-adapters"]
+
+    RAG --> Chroma[("Chroma<br/>15 類 = 15 chunk")]
+    PDF["data/*.pdf"] --> Ingest["scripts/ingest.py"] --> Chroma
+
+    Skill --> SK["skills/disposal-plan<br/>SKILL.md + next_pickup.py"]
+
+    MCPC -- "HTTP :8001/mcp" --> Sched["recycle-schedule<br/>get_schedule"]
+    MCPC -- "stdio" --> Time["time<br/>get_current_time"]
+
+    classDef rag fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef skill fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef mcp fill:#ffedd5,stroke:#ea580c,color:#7c2d12
+    class RAG,Chroma,Ingest,PDF rag
+    class Skill,SK skill
+    class MCPC,Sched,Time mcp
 ```
-                    ┌──────────────── Chainlit UI / CLI ────────────────┐
-  使用者 ──────────▶│  LangGraph StateGraph（自行實作的 ReAct 迴圈）     │
-                    │   reason ──有 tool_calls──▶ act ──▶ reason …     │
-                    │      │                       │（重複呼叫偵測）     │
-                    │      └─無 tool_calls─▶ END    └─超過 MAX_STEPS─▶ limit
-                    └───────┬───────────────┬───────────────┬───────────┘
-                            │               │               │
-                    search_rules     load_skill /      MCP（langchain-mcp-adapters）
-                            │        run_skill_script         │
-                  Chroma（內嵌，          │            ┌───────┴────────┐
-                  15 類 = 15 chunk）  skills/disposal-plan   recycle-schedule   time
-                            ▲        └ scripts/next_pickup.py  (HTTP, :8001)  (stdio)
-                            │                                  get_schedule  get_current_time
-                  scripts/ingest.py ◀── data/*.pdf
-```
+
+> 圖中藍色為 **RAG**、綠色為 **Skills**、橘色為 **MCP**。此圖為 Mermaid，GitHub 會自動渲染；VS Code 需安裝 Markdown Mermaid 擴充套件才看得到預覽。
 
 | 元件 | 說明 |
 | --- | --- |
