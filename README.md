@@ -48,8 +48,6 @@ flowchart TB
     class MCPC,Sched,Time mcp
 ```
 
-> 圖中藍色為 **RAG**、綠色為 **Skills**、橘色為 **MCP**。此圖為 Mermaid，GitHub 會自動渲染；VS Code 需安裝 Markdown Mermaid 擴充套件才看得到預覽。
-
 | 元件 | 說明 |
 | --- | --- |
 | `agent/recycle_agent/graph.py` | `StateGraph`：`reason`、`act`、`limit` 三個節點。act 會攔下與上一輪或同輪相同的工具呼叫 |
